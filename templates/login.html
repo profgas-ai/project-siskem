@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+
+{% block title %}Login - CryptGuard{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+    <div class="auth-box">
+
+        <!-- Header -->
+        <div class="auth-header">
+            <a href="{{ url_for('index') }}" class="back-link">← Kembali</a>
+            <div class="auth-icon">🔑</div>
+            <h1>Login</h1>
+            <p>Masukkan email dan password untuk masuk</p>
+        </div>
+
+        <!-- Alert: Error -->
+        {% if error %}
+        <div class="alert alert-error">
+            <span class="alert-icon">⚠</span>
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- Form Login -->
+        <form class="auth-form" method="POST" action="{{ url_for('login') }}" novalidate>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-input"
+                    placeholder="contoh@email.com"
+                    maxlength="100"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-input"
+                        placeholder="Masukkan password"
+                        maxlength="128"
+                        required
+                        autocomplete="current-password"
+                    >
+                    <button type="button" class="toggle-pwd" onclick="togglePassword('password')">👁</button>
+                </div>
+            </div>
+
+            <!-- Security Info -->
+            <div class="security-info">
+                <span class="security-icon">🔐</span>
+                <p>Password diverifikasi menggunakan <strong>bcrypt.checkpw()</strong>
+                tanpa perlu mendekripsi hash yang tersimpan.</p>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary btn-full">
+                Masuk
+            </button>
+
+        </form>
+
+        <!-- Link ke Register -->
+        <div class="auth-footer">
+            Belum punya akun?
+            <a href="{{ url_for('register') }}" class="auth-link">Daftar sekarang</a>
+        </div>
+
+    </div>
+
+    <!-- Side Info -->
+    <div class="auth-side">
+        <div class="side-card">
+            <h3>🔑 Proses Verifikasi</h3>
+            <div class="process-steps">
+                <div class="step">
+                    <span class="step-num">1</span>
+                    <div>
+                        <strong>Input Login</strong>
+                        <p>User memasukkan email & password</p>
+                    </div>
+                </div>
+                <div class="step-arrow">↓</div>
+                <div class="step">
+                    <span class="step-num">2</span>
+                    <div>
+                        <strong>Cari User</strong>
+                        <p>Temukan hash dari email yang cocok</p>
+                    </div>
+                </div>
+                <div class="step-arrow">↓</div>
+                <div class="step">
+                    <span class="step-num">3</span>
+                    <div>
+                        <strong>Verifikasi Hash</strong>
+                        <p>bcrypt.checkpw(input, stored_hash)</p>
+                    </div>
+                </div>
+                <div class="step-arrow">↓</div>
+                <div class="step step-final">
+                    <span class="step-num">4</span>
+                    <div>
+                        <strong>Buat Session</strong>
+                        <p>Session aman dibuat jika cocok</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info box -->
+        <div class="side-info-box">
+            <p>💡 <strong>Kenapa bcrypt.checkpw() aman?</strong></p>
+            <p>Bcrypt mengekstrak salt dari hash yang tersimpan, meng-hash ulang input,
+            lalu membandingkannya — tanpa perlu "mendekripsi" hash.</p>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+// Toggle password visibility
+function togglePassword(fieldId) {
+    const field = document.getElementById(fieldId);
+    field.type = field.type === 'password' ? 'text' : 'password';
+}
+</script>
+{% endblock %}

@@ -1,1 +1,8 @@
-[]
+[
+    {
+        "username": "bagas 123",
+        "email": "bagas@gmail.com",
+        "password_hash": "$2b$12$/7u2LvLPVn2njW7il6lq/utDMwECHajTt0adjzsVGmz5RAlcIvmBW",
+        "registered_at": "2026-06-07 11:33:37"
+    }
+]

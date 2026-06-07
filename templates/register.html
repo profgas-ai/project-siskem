@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Register - CryptGuard{% endblock %}
+
+{% block content %}
+
+<div class="auth-wrapper">
+    <div class="auth-box">
+
+        <!-- Header -->
+        <div class="auth-header">
+            <a href="{{ url_for('index') }}" class="back-link">← Kembali</a>
+            <div class="auth-icon">👤</div>
+            <h1>Buat Akun Baru</h1>
+            <p>Password akan disimpan menggunakan hash Bcrypt</p>
+        </div>
+
+        <!-- Alert: Error -->
+        {% if error %}
+        <div class="alert alert-error">
+            <span class="alert-icon">⚠</span>
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- Alert: Success -->
+        {% if success %}
+        <div class="alert alert-success">
+            <span class="alert-icon">✓</span>
+            {{ success }}
+            <br><a href="{{ url_for('login') }}" class="alert-link">Klik di sini untuk login →</a>
+        </div>
+        {% endif %}
+
+        <!-- Form Register -->
+        {% if not success %}
+        <form class="auth-form" method="POST" action="{{ url_for('register') }}" novalidate>
+
+            <!-- Username -->
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input
+                    type="text"
+                    id="username"
+                    name="username"
+                    class="form-input"
+                    placeholder="Masukkan username"
+                    maxlength="50"
+                    required
+                    autocomplete="username"
+                >
+                <span class="form-hint">Nama yang akan ditampilkan</span>
+            </div>
+
+            <!-- Email -->
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-input"
+                    placeholder="contoh@email.com"
+                    maxlength="100"
+                    required
+                    autocomplete="email"
+                >
+            </div>
+
+            <!-- Password -->
+            <div class="form-group">
+                <label for="password">Password</label>
+                <div class="input-wrapper">
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        class="form-input"
+                        placeholder="Min. 8 karakter (huruf + angka)"
+                        maxlength="128"
+                        required
+                        autocomplete="new-password"
+                        oninput="checkPasswordStrength(this.value)"
+                    >
+                    <button type="button" class="toggle-pwd" onclick="togglePassword('password')">👁</button>
+                </div>
+
+                <!-- Password Strength Indicator -->
+                <div class="strength-wrapper">
+                    <div class="strength-bar">
+                        <div class="strength-fill" id="strengthFill"></div>
+                    </div>
+                    <span class="strength-label" id="strengthLabel">—</span>
+                </div>
+
+                <!-- Strength Details -->
+                <div class="strength-details" id="strengthDetails">
+                    <span class="req" id="req-length">✗ Min. 8 karakter</span>
+                    <span class="req" id="req-letter">✗ Ada huruf</span>
+                    <span class="req" id="req-number">✗ Ada angka</span>
+                </div>
+            </div>
+
+            <!-- Konfirmasi Password -->
+            <div class="form-group">
+                <label for="confirm_password">Konfirmasi Password</label>
+                <div class="input-wrapper">
+                    <input
+                        type="password"
+                        id="confirm_password"
+                        name="confirm_password"
+                        class="form-input"
+                        placeholder="Ulangi password"
+                        maxlength="128"
+                        required
+                        autocomplete="new-password"
+                        oninput="checkPasswordMatch()"
+                    >
+                    <button type="button" class="toggle-pwd" onclick="togglePassword('confirm_password')">👁</button>
+                </div>
+                <span class="match-label" id="matchLabel"></span>
+            </div>
+
+            <!-- Security Info -->
+            <div class="security-info">
+                <span class="security-icon">🔐</span>
+                <p>Password akan di-hash menggunakan <strong>Bcrypt</strong> sebelum disimpan.
+                Password asli <strong>tidak pernah disimpan</strong> dalam database.</p>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="btn btn-primary btn-full">
+                Daftar Sekarang
+            </button>
+
+        </form>
+        {% endif %}
+
+        <!-- Link ke Login -->
+        <div class="auth-footer">
+            Sudah punya akun?
+            <a href="{{ url_for('login') }}" class="auth-link">Login di sini</a>
+        </div>
+
+    </div>
+
+    <!-- Side Info -->
+    <div class="auth-side">
+        <div class="side-card">
+            <h3>🔐 Keamanan Password</h3>
+            <div class="process-steps">
+                <div class="step">
+                    <span class="step-num">1</span>
+                    <div>
+                        <strong>Input</strong>
+                        <p>User memasukkan password plaintext</p>
+                    </div>
+                </div>
+                <div class="step-arrow">↓</div>
+                <div class="step">
+                    <span class="step-num">2</span>
+                    <div>
+                        <strong>Salt Generation</strong>
+                        <p>Bcrypt membuat salt acak (12 rounds)</p>
+                    </div>
+                </div>
+                <div class="step-arrow">↓</div>
+                <div class="step">
+                    <span class="step-num">3</span>
+                    <div>
+                        <strong>Hashing</strong>
+                        <p>bcrypt.hashpw(password, salt)</p>
+                    </div>
+                </div>
+                <div class="step-arrow">↓</div>
+                <div class="step step-final">
+                    <span class="step-num">4</span>
+                    <div>
+                        <strong>Simpan Hash</strong>
+                        <p>Hanya hash yang disimpan di users.json</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/password.js') }}"></script>
+{% endblock %}

@@ -1,0 +1,17 @@
+# ============================================================
+#  Requirements - Sistem Keamanan: Bcrypt & SHA-256
+# ============================================================
+#  Install semua dependency dengan perintah:
+#  pip install -r requirements.txt
+# ============================================================
+
+# Flask - Web framework ringan untuk Python
+Flask==3.0.3
+
+# bcrypt - Library untuk hashing password yang aman
+# Mengimplementasikan algoritma Bcrypt dengan salt otomatis
+bcrypt==4.1.3
+
+# Catatan:
+# hashlib (untuk SHA-256) sudah built-in di Python, tidak perlu install
+# json, os, re, datetime juga sudah built-in di Python
