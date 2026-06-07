@@ -1,0 +1,195 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - CryptGuard{% endblock %}
+
+{% block content %}
+
+<!-- Sidebar + Main Layout -->
+<div class="app-layout">
+
+    <!-- ===== SIDEBAR ===== -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon">🔐</span>
+            <span class="brand-text">Crypt<span class="accent">Guard</span></span>
+        </div>
+
+        <div class="sidebar-user">
+            <div class="user-avatar">{{ username[0].upper() }}</div>
+            <div class="user-info">
+                <span class="user-name">{{ username }}</span>
+                <span class="user-status">● Online</span>
+            </div>
+        </div>
+
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('dashboard') }}" class="nav-item active">
+                <span class="nav-icon">📊</span>
+                Dashboard
+            </a>
+            <a href="{{ url_for('sha256_demo') }}" class="nav-item">
+                <span class="nav-icon">🔷</span>
+                SHA-256 Demo
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item nav-logout">
+                <span class="nav-icon">🚪</span>
+                Logout
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <p>Sistem Keamanan 2026</p>
+            <p>Bcrypt & SHA-256</p>
+        </div>
+    </aside>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <main class="main-content">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1>Dashboard</h1>
+                <p class="page-sub">Selamat datang, <strong>{{ username }}</strong>!</p>
+            </div>
+            <div class="header-badge">
+                <span class="badge-dot"></span>
+                Session Aktif
+            </div>
+        </div>
+
+        <!-- Stats Cards Row -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-card-icon">🔐</div>
+                <div class="stat-card-info">
+                    <span class="stat-card-label">Status Akun</span>
+                    <span class="stat-card-value">Terautentikasi</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon">🕐</div>
+                <div class="stat-card-info">
+                    <span class="stat-card-label">Waktu Login</span>
+                    <span class="stat-card-value time-small">{{ login_time }}</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon">🔑</div>
+                <div class="stat-card-info">
+                    <span class="stat-card-label">Metode Auth</span>
+                    <span class="stat-card-value">Bcrypt Verify</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-card-icon">🛡</div>
+                <div class="stat-card-info">
+                    <span class="stat-card-label">Session</span>
+                    <span class="stat-card-value">Flask Encrypted</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Info Panels Row -->
+        <div class="panels-row">
+
+            <!-- Panel: Informasi Keamanan Akun -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>🔐 Informasi Keamanan Akun</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="security-item">
+                        <span class="sec-label">Penyimpanan Password</span>
+                        <span class="sec-value success">Bcrypt Hash (tidak plaintext)</span>
+                    </div>
+                    <div class="security-item">
+                        <span class="sec-label">Salt</span>
+                        <span class="sec-value success">Otomatis (unik per user)</span>
+                    </div>
+                    <div class="security-item">
+                        <span class="sec-label">Cost Factor</span>
+                        <span class="sec-value">12 rounds</span>
+                    </div>
+                    <div class="security-item">
+                        <span class="sec-label">Session Storage</span>
+                        <span class="sec-value success">Cookie terenkripsi (Flask)</span>
+                    </div>
+                    <div class="security-item">
+                        <span class="sec-label">Password di Server</span>
+                        <span class="sec-value success">Tidak tersimpan (one-way hash)</span>
+                    </div>
+                    <div class="security-item">
+                        <span class="sec-label">XSS Protection</span>
+                        <span class="sec-value success">HTML Escape aktif</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Panel: Cara Kerja Bcrypt -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>⚙️ Cara Kerja Bcrypt</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="code-block">
+                        <div class="code-line">
+                            <span class="c-comment"># 1. Generate salt</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="c-var">salt</span>
+                            <span class="c-op"> = </span>
+                            <span class="c-func">bcrypt.gensalt</span>
+                            <span>(rounds=12)</span>
+                        </div>
+                        <div class="code-line code-spacer"></div>
+                        <div class="code-line">
+                            <span class="c-comment"># 2. Hash password + salt</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="c-var">hashed</span>
+                            <span class="c-op"> = </span>
+                            <span class="c-func">bcrypt.hashpw</span>
+                            <span>(password, salt)</span>
+                        </div>
+                        <div class="code-line code-spacer"></div>
+                        <div class="code-line">
+                            <span class="c-comment"># 3. Verifikasi saat login</span>
+                        </div>
+                        <div class="code-line">
+                            <span class="c-var">ok</span>
+                            <span class="c-op"> = </span>
+                            <span class="c-func">bcrypt.checkpw</span>
+                            <span>(input, hashed)</span>
+                        </div>
+                    </div>
+                    <div class="bcrypt-hash-example">
+                        <p class="hash-label">Contoh output Bcrypt:</p>
+                        <code class="hash-display">$2b$12$eImiTXuWVxfM37uY4JANjQ<br>eloFrJRmFXkh0EQwBKEQE</code>
+                        <div class="hash-breakdown">
+                            <span class="hb-item"><span class="hb-key">$2b$</span> = versi</span>
+                            <span class="hb-item"><span class="hb-key">12$</span> = cost factor</span>
+                            <span class="hb-item"><span class="hb-key">22 chars</span> = salt</span>
+                            <span class="hb-item"><span class="hb-key">31 chars</span> = hash</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- CTA: SHA-256 Demo -->
+        <div class="cta-banner">
+            <div class="cta-text">
+                <h3>Coba Demo SHA-256 Hashing</h3>
+                <p>Input teks sembarang dan lihat hasilnya secara real-time</p>
+            </div>
+            <a href="{{ url_for('sha256_demo') }}" class="btn btn-primary">
+                Buka Demo →
+            </a>
+        </div>
+
+    </main>
+</div>
+
+{% endblock %}

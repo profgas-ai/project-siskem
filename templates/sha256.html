@@ -1,0 +1,339 @@
+{% extends "base.html" %}
+{% block title %}SHA-256 Demo - CryptGuard{% endblock %}
+
+{% block content %}
+<div class="app-layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-brand">
+            <span class="brand-icon">🔐</span>
+            <span class="brand-text">Crypt<span class="accent">Guard</span></span>
+        </div>
+        <div class="sidebar-user">
+            <div class="user-avatar">{{ username[0].upper() }}</div>
+            <div class="user-info">
+                <span class="user-name">{{ username }}</span>
+                <span class="user-status">● Online</span>
+            </div>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="{{ url_for('dashboard') }}" class="nav-item">
+                <span class="nav-icon">📊</span> Dashboard
+            </a>
+            <a href="{{ url_for('sha256_demo') }}" class="nav-item active">
+                <span class="nav-icon">🔷</span> SHA-256 Demo
+            </a>
+            <a href="{{ url_for('logout') }}" class="nav-item nav-logout">
+                <span class="nav-icon">🚪</span> Logout
+            </a>
+        </nav>
+        <div class="sidebar-footer">
+            <p>Sistem Keamanan 2026</p>
+            <p>Bcrypt & SHA-256</p>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+        <div class="page-header">
+            <div>
+                <h1>SHA-256 Demo</h1>
+                <p class="page-sub">Visualisasi proses hashing SHA-256 secara langsung</p>
+            </div>
+        </div>
+
+        <div class="sha-demo-grid">
+
+            <!-- LEFT: Input & Output -->
+            <div class="panel sha-panel">
+                <div class="panel-header">
+                    <h2>🔷 Generator SHA-256</h2>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="sha-input">Masukkan Teks</label>
+                        <textarea id="sha-input" class="form-input sha-textarea"
+                            placeholder="Ketik teks apa saja di sini..."
+                            rows="4" maxlength="10000"
+                            oninput="updateCharCount()"></textarea>
+                        <div class="sha-meta"><span id="char-count">0</span> karakter</div>
+                    </div>
+
+                    <button class="btn btn-primary btn-full" onclick="generateSHA256()">
+                        Generate SHA-256 Hash
+                    </button>
+
+                    <!-- ═══ VISUALISASI PROSES ═══════════════════════════ -->
+                    <div id="process-visual" class="process-visual" style="display:none;">
+
+                        <div class="pv-title">
+                            <span class="pv-title-line"></span>
+                            <span class="pv-title-text">Proses SHA-256</span>
+                            <span class="pv-title-line"></span>
+                        </div>
+
+                        <!-- Step 1: Input -->
+                        <div class="pv-step" id="pv-step-1">
+                            <div class="pv-step-header">
+                                <div class="pv-step-num">1</div>
+                                <div class="pv-step-label">
+                                    <span class="pv-step-name">Input Plaintext</span>
+                                    <span class="pv-step-desc">Teks asli yang dimasukkan user</span>
+                                </div>
+                                <div class="pv-step-status" id="pv-s1-status"></div>
+                            </div>
+                            <div class="pv-step-body">
+                                <div class="pv-data-box pv-input-box">
+                                    <span class="pv-data-label">TEXT</span>
+                                    <code class="pv-data-value" id="pv-input-text">—</code>
+                                </div>
+                                <div class="pv-row-info">
+                                    <span>Encode UTF-8:</span>
+                                    <code class="pv-bytes" id="pv-bytes">—</code>
+                                </div>
+                                <div class="pv-row-info">
+                                    <span>Panjang:</span>
+                                    <code id="pv-input-len">—</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pv-arrow" id="pv-arr-1">↓</div>
+
+                        <!-- Step 2: Pre-processing / Padding -->
+                        <div class="pv-step" id="pv-step-2">
+                            <div class="pv-step-header">
+                                <div class="pv-step-num">2</div>
+                                <div class="pv-step-label">
+                                    <span class="pv-step-name">Pre-processing (Padding)</span>
+                                    <span class="pv-step-desc">Pesan di-pad hingga panjangnya ≡ 448 (mod 512) bit</span>
+                                </div>
+                                <div class="pv-step-status" id="pv-s2-status"></div>
+                            </div>
+                            <div class="pv-step-body">
+                                <div class="pv-padding-visual">
+                                    <div class="pv-pad-block pv-pad-msg">
+                                        <span class="pv-pad-label">Pesan Asli</span>
+                                        <span class="pv-pad-val" id="pv-pad-msg-len">—</span>
+                                    </div>
+                                    <div class="pv-pad-block pv-pad-bit">
+                                        <span class="pv-pad-label">+ bit "1"</span>
+                                        <span class="pv-pad-val">1 bit</span>
+                                    </div>
+                                    <div class="pv-pad-block pv-pad-zero">
+                                        <span class="pv-pad-label">+ Zero padding</span>
+                                        <span class="pv-pad-val" id="pv-pad-zeros">—</span>
+                                    </div>
+                                    <div class="pv-pad-block pv-pad-len">
+                                        <span class="pv-pad-label">+ Panjang asli</span>
+                                        <span class="pv-pad-val">64 bit</span>
+                                    </div>
+                                </div>
+                                <div class="pv-row-info">
+                                    <span>Total setelah padding:</span>
+                                    <code id="pv-total-bits">—</code>
+                                </div>
+                                <div class="pv-row-info">
+                                    <span>Jumlah blok 512-bit:</span>
+                                    <code id="pv-blocks">—</code>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pv-arrow" id="pv-arr-2">↓</div>
+
+                        <!-- Step 3: Inisialisasi -->
+                        <div class="pv-step" id="pv-step-3">
+                            <div class="pv-step-header">
+                                <div class="pv-step-num">3</div>
+                                <div class="pv-step-label">
+                                    <span class="pv-step-name">Inisialisasi Hash Values</span>
+                                    <span class="pv-step-desc">8 konstanta H0–H7 dari akar kuadrat 8 bilangan prima pertama</span>
+                                </div>
+                                <div class="pv-step-status" id="pv-s3-status"></div>
+                            </div>
+                            <div class="pv-step-body">
+                                <div class="pv-hash-init">
+                                    <div class="pv-h-item"><span class="pv-h-key">H0</span><code class="pv-h-val">6a09e667</code></div>
+                                    <div class="pv-h-item"><span class="pv-h-key">H1</span><code class="pv-h-val">bb67ae85</code></div>
+                                    <div class="pv-h-item"><span class="pv-h-key">H2</span><code class="pv-h-val">3c6ef372</code></div>
+                                    <div class="pv-h-item"><span class="pv-h-key">H3</span><code class="pv-h-val">a54ff53a</code></div>
+                                    <div class="pv-h-item"><span class="pv-h-key">H4</span><code class="pv-h-val">510e527f</code></div>
+                                    <div class="pv-h-item"><span class="pv-h-key">H5</span><code class="pv-h-val">9b05688c</code></div>
+                                    <div class="pv-h-item"><span class="pv-h-key">H6</span><code class="pv-h-val">1f83d9ab</code></div>
+                                    <div class="pv-h-item"><span class="pv-h-key">H7</span><code class="pv-h-val">5be0cd19</code></div>
+                                </div>
+                                <div class="pv-note">
+                                    64 konstanta K[0..63] juga diinisialisasi dari akar kubik 64 bilangan prima pertama
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pv-arrow" id="pv-arr-3">↓</div>
+
+                        <!-- Step 4: Kompresi -->
+                        <div class="pv-step" id="pv-step-4">
+                            <div class="pv-step-header">
+                                <div class="pv-step-num">4</div>
+                                <div class="pv-step-label">
+                                    <span class="pv-step-name">Kompresi — 64 Putaran</span>
+                                    <span class="pv-step-desc">Setiap blok 512-bit diproses melalui 64 round operasi bitwise</span>
+                                </div>
+                                <div class="pv-step-status" id="pv-s4-status"></div>
+                            </div>
+                            <div class="pv-step-body">
+                                <div class="pv-round-visual">
+                                    <div class="pv-round-track">
+                                        <div class="pv-round-fill" id="pv-round-fill"></div>
+                                    </div>
+                                    <span class="pv-round-label">64 putaran selesai</span>
+                                </div>
+                                <div class="pv-ops-grid">
+                                    <div class="pv-op-box">
+                                        <code>Ch(e,f,g)</code>
+                                        <span>Choose</span>
+                                    </div>
+                                    <div class="pv-op-box">
+                                        <code>Maj(a,b,c)</code>
+                                        <span>Majority</span>
+                                    </div>
+                                    <div class="pv-op-box">
+                                        <code>Σ0, Σ1</code>
+                                        <span>Sigma</span>
+                                    </div>
+                                    <div class="pv-op-box">
+                                        <code>+ K[i]</code>
+                                        <span>Round const</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="pv-arrow" id="pv-arr-4">↓</div>
+
+                        <!-- Step 5: Output -->
+                        <div class="pv-step pv-step-final" id="pv-step-5">
+                            <div class="pv-step-header">
+                                <div class="pv-step-num pv-step-num-final">5</div>
+                                <div class="pv-step-label">
+                                    <span class="pv-step-name">Output — SHA-256 Hash</span>
+                                    <span class="pv-step-desc">H0–H7 digabung → 256 bit = 64 karakter hex</span>
+                                </div>
+                                <div class="pv-step-status" id="pv-s5-status"></div>
+                            </div>
+                            <div class="pv-step-body">
+                                <div class="pv-output-header">
+                                    <span>Hash SHA-256:</span>
+                                    <button class="btn-copy" onclick="copyHash()" title="Salin hash">📋 Salin</button>
+                                </div>
+                                <div class="sha-hash-display pv-hash-glow" id="sha-hash-display">—</div>
+                                <div class="sha-info-grid">
+                                    <div class="sha-info-item">
+                                        <span class="sha-info-label">Panjang Hash</span>
+                                        <span class="sha-info-value" id="hash-length">—</span>
+                                    </div>
+                                    <div class="sha-info-item">
+                                        <span class="sha-info-label">Panjang Input</span>
+                                        <span class="sha-info-value" id="input-length">—</span>
+                                    </div>
+                                    <div class="sha-info-item">
+                                        <span class="sha-info-label">Format</span>
+                                        <span class="sha-info-value">Hexadecimal</span>
+                                    </div>
+                                    <div class="sha-info-item">
+                                        <span class="sha-info-label">Algoritma</span>
+                                        <span class="sha-info-value">SHA-2 Family</span>
+                                    </div>
+                                </div>
+                                <!-- Comparison -->
+                                <div class="comparison-box">
+                                    <div class="comp-item">
+                                        <span class="comp-item-label">Input (Plaintext)</span>
+                                        <div class="comp-item-value plain-preview" id="plain-preview">—</div>
+                                    </div>
+                                    <div class="comp-arrow">→</div>
+                                    <div class="comp-item">
+                                        <span class="comp-item-label">Output (SHA-256 Hash)</span>
+                                        <div class="comp-item-value hash-preview" id="hash-preview">—</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- ══════════════════════════════════════════════════ -->
+
+                    <div class="alert alert-error" id="sha-error" style="display:none;"></div>
+                </div>
+            </div>
+
+            <!-- RIGHT: Penjelasan -->
+            <div class="sha-side">
+                <div class="panel">
+                    <div class="panel-header"><h2>📖 Cara Kerja SHA-256</h2></div>
+                    <div class="panel-body">
+                        <div class="explanation-steps">
+                            <div class="exp-step"><span class="exp-num">1</span>
+                                <div><strong>Pre-processing</strong>
+                                <p>Input di-padding hingga panjangnya ≡ 448 (mod 512) bit</p></div></div>
+                            <div class="exp-step"><span class="exp-num">2</span>
+                                <div><strong>Inisialisasi</strong>
+                                <p>8 konstanta hash awal (H0–H7) dari bilangan prima</p></div></div>
+                            <div class="exp-step"><span class="exp-num">3</span>
+                                <div><strong>Kompresi</strong>
+                                <p>64 putaran operasi bitwise pada setiap blok 512-bit</p></div></div>
+                            <div class="exp-step"><span class="exp-num">4</span>
+                                <div><strong>Output</strong>
+                                <p>Gabungkan H0–H7 → 256 bit = 64 karakter hex</p></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header"><h2>⚡ Avalanche Effect</h2></div>
+                    <div class="panel-body">
+                        <p class="panel-desc">Perubahan kecil pada input menghasilkan hash yang <strong>totally berbeda</strong>:</p>
+                        <div class="avalanche-examples">
+                            <div class="av-row">
+                                <span class="av-input">Hello</span>
+                                <span class="av-arrow">→</span>
+                                <span class="av-hash">185f8db32...</span>
+                            </div>
+                            <div class="av-row">
+                                <span class="av-input">hello</span>
+                                <span class="av-arrow">→</span>
+                                <span class="av-hash">2cf24dba5...</span>
+                            </div>
+                            <div class="av-diff">↑ Hanya 1 huruf beda, tapi hash sama sekali berbeda!</div>
+                        </div>
+                        <button class="btn btn-outline btn-sm" onclick="demoAvalanche()">Coba Demo Ini</button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header"><h2>✅ Properti SHA-256</h2></div>
+                    <div class="panel-body">
+                        <div class="props-list">
+                            <div class="prop-item"><span class="prop-icon good">✓</span>
+                                <div><strong>Deterministic</strong><p>Input sama → hash selalu sama</p></div></div>
+                            <div class="prop-item"><span class="prop-icon good">✓</span>
+                                <div><strong>One-way</strong><p>Tidak bisa di-reverse ke input asli</p></div></div>
+                            <div class="prop-item"><span class="prop-icon good">✓</span>
+                                <div><strong>Avalanche Effect</strong><p>Perubahan kecil → output berubah drastis</p></div></div>
+                            <div class="prop-item"><span class="prop-icon good">✓</span>
+                                <div><strong>Collision Resistant</strong><p>Sangat sulit menemukan 2 input dengan hash sama</p></div></div>
+                            <div class="prop-item"><span class="prop-icon warn">⚠</span>
+                                <div><strong>Tanpa Salt</strong><p>Tidak cocok untuk password tanpa salt tambahan</p></div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{{ url_for('static', filename='js/sha256.js') }}"></script>
+{% endblock %}

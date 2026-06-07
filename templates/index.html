@@ -1,0 +1,235 @@
+{% extends "base.html" %}
+
+{% block title %}CryptGuard - Bcrypt & SHA-256 Hashing{% endblock %}
+
+{% block content %}
+
+<!-- ===== NAVBAR ===== -->
+<nav class="navbar">
+    <div class="nav-brand">
+        <span class="brand-icon">🔐</span>
+        <span class="brand-text">Crypt<span class="accent">Guard</span></span>
+    </div>
+    <div class="nav-links">
+        <a href="{{ url_for('login') }}" class="btn btn-ghost">Login</a>
+        <a href="{{ url_for('register') }}" class="btn btn-primary">Register</a>
+    </div>
+</nav>
+
+<!-- ===== HERO SECTION ===== -->
+<section class="hero">
+    <div class="hero-content">
+        <!-- Badge -->
+        <div class="badge">
+            <span class="badge-dot"></span>
+            Sistem Keamanan · Mata Kuliah 2026
+        </div>
+
+        <!-- Title -->
+        <h1 class="hero-title">
+            Implementasi<br>
+            <span class="gradient-text">Bcrypt & SHA-256</span><br>
+            Hashing
+        </h1>
+
+        <p class="hero-subtitle">
+            Pelajari bagaimana password disimpan dengan aman menggunakan algoritma
+            hashing modern. Demo interaktif autentikasi berbasis Bcrypt dan SHA-256.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="hero-actions">
+            <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                <span>Mulai Sekarang</span>
+                <span class="btn-arrow">→</span>
+            </a>
+            <a href="{{ url_for('login') }}" class="btn btn-outline btn-lg">Login</a>
+        </div>
+
+        <!-- Stats -->
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-value">256-bit</span>
+                <span class="stat-label">SHA-256 Output</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat">
+                <span class="stat-value">2¹²</span>
+                <span class="stat-label">Bcrypt Cost Factor</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat">
+                <span class="stat-value">64 char</span>
+                <span class="stat-label">Hex Hash Length</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Terminal Visual -->
+    <div class="hero-visual">
+        <div class="terminal">
+            <div class="terminal-header">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+                <span class="terminal-title">hash_demo.py</span>
+            </div>
+            <div class="terminal-body">
+                <div class="term-line">
+                    <span class="term-prompt">$</span>
+                    <span class="term-cmd typing-effect">python hash_demo.py</span>
+                </div>
+                <div class="term-line term-output">
+                    <span class="term-comment"># Input password plaintext</span>
+                </div>
+                <div class="term-line">
+                    <span class="term-var">password</span>
+                    <span class="term-op"> = </span>
+                    <span class="term-str">"MyP@ssw0rd"</span>
+                </div>
+                <div class="term-line term-spacer"></div>
+                <div class="term-line term-output">
+                    <span class="term-comment"># Bcrypt hashing (dengan salt otomatis)</span>
+                </div>
+                <div class="term-line">
+                    <span class="term-var">salt</span>
+                    <span class="term-op"> = </span>
+                    <span class="term-func">bcrypt.gensalt</span>
+                    <span class="term-plain">(rounds=12)</span>
+                </div>
+                <div class="term-line">
+                    <span class="term-var">hashed</span>
+                    <span class="term-op"> = </span>
+                    <span class="term-func">bcrypt.hashpw</span>
+                    <span class="term-plain">(password, salt)</span>
+                </div>
+                <div class="term-spacer"></div>
+                <div class="term-line term-result">
+                    <span class="term-comment"># Output Bcrypt hash:</span>
+                </div>
+                <div class="term-line term-hash">
+                    $2b$12$eImiTXuWVxfM37uY4JANjQ...
+                </div>
+                <div class="term-spacer"></div>
+                <div class="term-line term-output">
+                    <span class="term-comment"># SHA-256 hashing</span>
+                </div>
+                <div class="term-line">
+                    <span class="term-var">sha_hash</span>
+                    <span class="term-op"> = </span>
+                    <span class="term-func">hashlib.sha256</span>
+                    <span class="term-plain">(text).hexdigest()</span>
+                </div>
+                <div class="term-line term-hash">
+                    a665a45920422f9d...
+                </div>
+                <div class="term-cursor">█</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ===== INFO CARDS SECTION ===== -->
+<section class="info-section">
+    <div class="section-header">
+        <h2>Konsep <span class="accent">Hashing</span></h2>
+        <p>Memahami algoritma keamanan yang diimplementasikan</p>
+    </div>
+
+    <div class="cards-grid">
+
+        <!-- Card: Apa itu Hashing -->
+        <div class="card card-glow">
+            <div class="card-icon">⚡</div>
+            <h3>Apa itu Hashing?</h3>
+            <p>
+                Hashing adalah proses mengubah data (plaintext) menjadi nilai
+                tetap (hash/digest) menggunakan fungsi matematika satu arah.
+                Hash <strong>tidak bisa di-reverse</strong> menjadi input aslinya.
+            </p>
+            <div class="card-feature">
+                <span class="feature-tag">One-way</span>
+                <span class="feature-tag">Deterministic</span>
+                <span class="feature-tag">Fixed-length</span>
+            </div>
+        </div>
+
+        <!-- Card: Bcrypt -->
+        <div class="card card-glow card-highlight">
+            <div class="card-icon">🔐</div>
+            <h3>Bcrypt</h3>
+            <p>
+                Bcrypt dirancang khusus untuk hashing <strong>password</strong>.
+                Secara otomatis menambahkan <strong>salt</strong> (nilai acak) ke setiap hash,
+                sehingga password yang sama menghasilkan hash yang berbeda setiap kali.
+            </p>
+            <ul class="card-list">
+                <li>✓ Salt otomatis (anti rainbow table)</li>
+                <li>✓ Cost factor yang bisa diatur</li>
+                <li>✓ Lambat secara by-design (anti brute force)</li>
+                <li>✓ Standar industri untuk password</li>
+            </ul>
+        </div>
+
+        <!-- Card: SHA-256 -->
+        <div class="card card-glow">
+            <div class="card-icon">🔷</div>
+            <h3>SHA-256</h3>
+            <p>
+                SHA-256 (Secure Hash Algorithm 256-bit) adalah fungsi hash kriptografi
+                dari keluarga SHA-2. Menghasilkan digest sepanjang <strong>256 bit
+                (64 karakter hex)</strong>.
+            </p>
+            <ul class="card-list">
+                <li>✓ Output selalu 64 karakter hex</li>
+                <li>✓ Avalanche effect (perubahan kecil = hash beda total)</li>
+                <li>✓ Digunakan di blockchain, TLS, digital signature</li>
+                <li>⚠ Tanpa salt, tidak ideal untuk password</li>
+            </ul>
+        </div>
+
+        <!-- Card: Perbedaan -->
+        <div class="card card-glow">
+            <div class="card-icon">⚖️</div>
+            <h3>Bcrypt vs SHA-256</h3>
+            <div class="comparison-table">
+                <div class="comp-row comp-header">
+                    <span>Aspek</span>
+                    <span>Bcrypt</span>
+                    <span>SHA-256</span>
+                </div>
+                <div class="comp-row">
+                    <span>Tujuan utama</span>
+                    <span class="good">Password</span>
+                    <span class="warn">Data integrity</span>
+                </div>
+                <div class="comp-row">
+                    <span>Salt otomatis</span>
+                    <span class="good">✓ Ya</span>
+                    <span class="bad">✗ Tidak</span>
+                </div>
+                <div class="comp-row">
+                    <span>Kecepatan</span>
+                    <span class="good">Lambat (aman)</span>
+                    <span class="warn">Cepat</span>
+                </div>
+                <div class="comp-row">
+                    <span>Output length</span>
+                    <span>~60 chars</span>
+                    <span>64 chars hex</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<footer class="footer">
+    <p>
+        🔐 <strong>CryptGuard</strong> · Proyek Mata Kuliah Sistem Keamanan 2026
+    </p>
+    <p class="footer-sub">Implementasi Bcrypt & SHA-256 Hashing · Python + Flask</p>
+</footer>
+
+{% endblock %}
